@@ -1,7 +1,7 @@
 import scrapy
 
 
-path_addresses = '/home/alessandro/Github/Discovering_Wheel/tests/addrIdMapping/addrIdMapping_1'
+path_addresses = '/home/alessandro/Github/Discovering_Wheel/tests/addrIdMapping/addrIdMapping_test_26375136'
 
 base_url = 'https://btc.com/'
 
@@ -24,7 +24,6 @@ class AddressesSpider(scrapy.Spider):
                 line = rpa.readline()
                 if not line: break
                 addr = (line.split(',')[0]).strip()
-                print(base_url+addr)
                 addresses.append(base_url+addr)
         return addresses
 
@@ -36,8 +35,8 @@ class AddressesSpider(scrapy.Spider):
     def parse(self, response):
         filename = 'scrapedAddressBTC.com.csv'
         address = response.url.split("/")[3].strip()
-        name = str((response.css('span::text').getall()[1].strip()))
-        if name != '0000':
+        name = response.selector.xpath('//ol[@class="breadcrumb bm"]//span/text()').get()
+        if name is not None:
             with open(filename, 'a') as f:
                 f.write(address+','+name+'\n')
             self.log('Saved file %s' % filename)
